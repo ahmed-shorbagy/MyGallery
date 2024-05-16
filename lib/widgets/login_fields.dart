@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_gallery/controller/cubit/log_in_cubit.dart';
 import 'package:my_gallery/utils/Api_service.dart';
 import 'package:my_gallery/widgets/custom_text_field.dart';
 
@@ -55,18 +57,24 @@ class _LoginFieldsState extends State<LoginFields> {
                   backgroundColor: MaterialStateProperty.all(
                     const Color(0xFF7BB3FF),
                   )),
-              onPressed: () {
-                ApiService()
-                    .loginUser(
-                        email: emailController.text,
-                        password: passwordController.text)
-                    .then((value) {});
+              onPressed: () async {
+                await BlocProvider.of<LogInCubit>(context).logInUser(
+                    email: emailController.text,
+                    password: passwordController.text);
               },
-              child: const Text('SUBMIT',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w700)),
+              child: BlocBuilder<LogInCubit, LogInState>(
+                builder: (context, state) {
+                  if (state is LogInLoading) {
+                    return const CircularProgressIndicator();
+                  } else {
+                    return const Text('SUBMIT',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w700));
+                  }
+                },
+              ),
             ),
             const SizedBox(
               height: 30,
